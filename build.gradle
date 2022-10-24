@@ -1,0 +1,171 @@
+buildscript {
+    repositories {
+        maven { url = 'https://maven.minecraftforge.net/' }
+        maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
+    }
+    dependencies {
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
+        classpath group: 'org.spongepowered', name: 'mixingradle', version: '0.7-SNAPSHOT'
+    }
+}
+
+plugins {
+    id 'net.minecraftforge.gradle' version '5.1.+'
+}
+
+group = 'org.pival81'
+version = '1.0-SNAPSHOT'
+
+java {
+    archivesBaseName = 'botania-reliquary-compat'
+    toolchain.languageVersion = JavaLanguageVersion.of(8)
+}
+
+minecraft {
+    mappings channel: 'stable', version: '39-1.12'
+
+    runs {
+        client {
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'debug'
+            arg '-torg.spongepowered.asm.launch.MixinTweaker'
+            mods {
+                botaniareliquarycompat {
+                    source sourceSets.main
+                }
+            }
+        }
+        server {
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'debug'
+            mods {
+                botaniareliquarycompat {
+                    source sourceSets.main
+                }
+            }
+        }
+    }
+}
+
+sourceSets.main.resources { srcDir 'src/generated/resources' }
+
+repositories {
+    maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
+    maven { url "https://cursemaven.com" }
+}
+
+dependencies {
+    minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2860'
+
+    annotationProcessor('org.spongepowered:mixin:0.8.5:processor')
+
+    implementation fg.deobf("curse.maven:botania-225643:3330934")
+    implementation fg.deobf("curse.maven:patchouli-306770:3162874")
+    implementation fg.deobf("curse.maven:baubles-227083:2518667")
+    implementation fg.deobf("curse.maven:reliquary-v1-3-241319:2761319")
+    implementation fg.deobf("curse.maven:mixin-booter-419286:3886235")
+    implementation fg.deobf("curse.maven:mixinbootstrap-357178:3437402")
+}
+jar {
+    manifest {
+        attributes([
+                    "Specification-Title"     : "botaniareliquarycompat",
+                    "Specification-Vendor"    : "Pival81",
+                    "Specification-Version"   : "1",
+                    "Implementation-Title"    : project.name,
+                    "Implementation-Version"  : project.jar.archiveVersion,
+                    "Implementation-Vendor"   : "Pival81",
+                    "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+                    "ForceLoadAsMod": true,
+                    /*'TweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
+                    'MixinConfigs': 'botaniareliquarycompat.mixins.json',*/
+        ])
+    }
+}
+
+jar.finalizedBy('reobfJar')
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+}
+/*
+
+This stuff was needed to make the mixins run before having MixinBootstrap provide the Mixin packages.
+Also this wasn't working when using the jar.
+Found this whole block randomly on github gists, thanks to ZekerZhayard for basically fixing all my problems
+https://gist.github.com/ZekerZhayard/d609437b072927c8d82f5402bdaf0673
+The normal configuration you'd find in guides didn't work because I'm stubborn and wanted
+to use ForgeGradle 5+ instead of sticking to 2.3 like all the normal human beings do.
+Yay me.
+*/
+
+apply plugin: "org.spongepowered.mixin"
+configurations {
+    library
+    implementation.extendsFrom library
+}
+repositories {
+    maven { url = "https://repo.spongepowered.org/repository/maven-public/" }
+}
+dependencies {
+    library "org.spongepowered:mixin:0.8.5-SNAPSHOT"
+    library "com.google.guava:guava:21.0"
+    annotationProcessor "org.spongepowered:mixin:0.8.5-SNAPSHOT"
+}
+minecraft.runs.all {
+    lazyToken("minecraft_classpath") {
+        configurations.library.copyRecursive().resolve().collect { it.absolutePath }.join(File.pathSeparator)
+    }
+}
+afterEvaluate {
+    configurations.compileClasspath.resolvedConfiguration.firstLevelModuleDependencies.each { dep ->
+        dependencies.annotationProcessor([group: dep.moduleGroup, name: dep.moduleName, version: dep.moduleVersion])
+    }
+}
+
+mixin {
+    add sourceSets.main, "botaniareliquarycompat.refmap.json"
+
+    config "botaniareliquarycompat.mixins.json"
+
+    debug.verbose = true
+    debug.export = true
+
+}
+
+
+
+
+/*
+Everything after this comment is needed because IntelliJ IDEA didn't want to include the resources in the same directory
+as the built classes, so I had to make it do that. Added a few modifications of my own, to make it clean every time it builds
+and to make it copy the files automatically every time I run the game.
+This is because the jar task complains if it finds the same files in both the resources and classes directory.
+The reason I need the resources copied into the classes directory is so that they can be loaded while running the game from the dev environment.
+Found this on stackoverflow: https://stackoverflow.com/a/70151634
+*/
+apply plugin: 'idea'
+idea {
+    module {
+        inheritOutputDirs = true
+    }
+}
+subprojects {
+    apply plugin: 'idea'
+}
+
+task prepareAssets(type: Copy) {
+    group = 'build'
+    from project.file('src/main/resources')
+    into project.file('build/classes/java/main')
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
+assemble.dependsOn clean
+
+tasks.whenTaskAdded { task ->
+    if(task.name == "runClient")
+        task.dependsOn prepareAssets
+}

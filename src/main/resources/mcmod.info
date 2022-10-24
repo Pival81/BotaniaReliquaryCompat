@@ -1,0 +1,18 @@
+[
+  {
+    "modid": "botania-reliquary-compat",
+    "name": "Botania Reliquary Compat",
+    "description": "Adds compatibility between Reliquary's Lilypad of Fertility and Botania's Horn of the Wild and Drum of the Wild",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "url": "http://github.com/Pival81",
+    "updateUrl": "",
+    "authorList": [
+      "Pival81"
+    ],
+    "credits": "",
+    "logoFile": "",
+    "screenshots": [],
+    "dependencies": []
+  }
+]

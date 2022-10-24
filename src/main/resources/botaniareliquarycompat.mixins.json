@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "package": "org.pival81.botaniareliquarycompat.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "botaniareliquarycompat.refmap.json",
+  "mixins": [
+    "LilypadFertilityMixin"
+  ],
+  "client": [
+    "LilypadItemMixin"
+  ],
+  "minVersion": "0.8"
+}
