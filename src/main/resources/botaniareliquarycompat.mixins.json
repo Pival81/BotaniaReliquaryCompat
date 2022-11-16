@@ -4,11 +4,7 @@
   "compatibilityLevel": "JAVA_8",
   "refmap": "botaniareliquarycompat.refmap.json",
   "mixins": [
-    "LilypadFertilityMixin",
-    "LilypadItemMixin"
-  ],
-  "client": [
-    "LilypadItemMixin"
+    "LilypadFertilityMixin"
   ],
   "minVersion": "0.8"
 }

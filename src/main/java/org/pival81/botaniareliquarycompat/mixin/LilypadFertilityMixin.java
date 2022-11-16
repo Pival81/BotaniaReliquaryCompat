@@ -5,9 +5,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import vazkii.botania.api.item.IHornHarvestable;
-import xreliquary.blocks.BlockFertileLilypad;
+import xreliquary.blocks.FertileLilyPadBlock;
 
-@Mixin(BlockFertileLilypad.class)
+@Mixin(FertileLilyPadBlock.class)
 public class LilypadFertilityMixin implements IHornHarvestable {
     @Override
     public boolean canHornHarvest(World world, BlockPos blockPos, ItemStack itemStack, EnumHornType enumHornType) {
@@ -21,7 +21,6 @@ public class LilypadFertilityMixin implements IHornHarvestable {
 
     @Override
     public void harvestByHorn(World world, BlockPos blockPos, ItemStack itemStack, EnumHornType enumHornType) {
-
     }
 
 }

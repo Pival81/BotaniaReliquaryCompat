@@ -1,0 +1,42 @@
+modLoader="javafml" #mandatory
+loaderVersion="[36,)" #mandatory
+license="All rights reserved"
+#issueTrackerURL="https://change.me.to.your.issue.tracker.example.invalid/" #optional
+[[mods]] #mandatory
+modId="botania-reliquary-compat" #mandatory
+version="0.0.1" #mandatory
+# A display name for the mod
+displayName="Botania Reliquary Compat" #mandatory
+#updateJSONURL="https://change.me.example.invalid/updates.json" #optional
+#displayURL="https://change.me.to.your.mods.homepage.example.invalid/" #optional
+#logoFile="examplemod.png" #optional
+credits="Pival81" #optional
+authors="Pival81"
+description='''
+Adds compatibility between Reliquary's Lilypad of Fertility and Botania's Horn of the Wild and Drum of the Wild
+'''
+[[dependencies.botania-reliquary-compat]] #optional
+modId="forge" #mandatory
+mandatory=true #mandatory
+versionRange="[36,)" #mandatory
+ordering="NONE"
+side="BOTH"
+[[dependencies.botania-reliquary-compat]]
+modId="minecraft"
+mandatory=true
+versionRange="[1.16.5]"
+ordering="NONE"
+side="BOTH"
+[[dependencies.botania-reliquary-compat]]
+modId="xreliquary"
+mandatory=true
+versionRange="1.3.5.1124"
+ordering="BEFORE"
+side="BOTH"
+[[dependencies.botania-reliquary-compat]]
+modId="botania"
+mandatory=true
+versionRange="420.3"
+ordering="BEFORE"
+side="BOTH"
+

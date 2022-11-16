@@ -1,6 +1,7 @@
 buildscript {
     repositories {
-        maven { url = 'https://maven.minecraftforge.net/' }
+        maven { url = 'https://maven.minecraftforge.net' }
+        mavenCentral()
         maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
     }
     dependencies {
@@ -16,13 +17,14 @@ plugins {
 group = 'org.pival81'
 version = '1.0-SNAPSHOT'
 
+java.toolchain.languageVersion = JavaLanguageVersion.of(8)
+
 java {
     archivesBaseName = 'botania-reliquary-compat'
-    toolchain.languageVersion = JavaLanguageVersion.of(8)
 }
 
 minecraft {
-    mappings channel: 'stable', version: '39-1.12'
+    mappings channel: 'official', version: '1.16.5'
 
     runs {
         client {
@@ -57,15 +59,14 @@ repositories {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2860'
+    minecraft 'net.minecraftforge:forge:1.16.5-36.2.39'
 
     annotationProcessor('org.spongepowered:mixin:0.8.5:processor')
 
-    implementation fg.deobf("curse.maven:botania-225643:3330934")
-    implementation fg.deobf("curse.maven:patchouli-306770:3162874")
-    implementation fg.deobf("curse.maven:baubles-227083:2518667")
-    implementation fg.deobf("curse.maven:reliquary-v1-3-241319:2761319")
-    implementation fg.deobf("curse.maven:mixin-booter-419286:3886235")
+    implementation fg.deobf("curse.maven:botania-225643:4066054")
+    implementation fg.deobf("curse.maven:patchouli-306770:3847029")
+    implementation fg.deobf("curse.maven:curios-309927:3725386")
+    implementation fg.deobf("curse.maven:reliquary-v1-3-241319:3682110")
 }
 jar {
     manifest {
@@ -86,9 +87,6 @@ jar {
 
 jar.finalizedBy('reobfJar')
 
-tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
-}
 /*
 
 This stuff was needed to make the mixins run before having MixinBootstrap provide the Mixin packages.
@@ -101,29 +99,9 @@ Yay me.
 */
 
 apply plugin: "org.spongepowered.mixin"
-configurations {
-    library
-    implementation.extendsFrom library
-}
 repositories {
     maven { url = "https://repo.spongepowered.org/repository/maven-public/" }
 }
-dependencies {
-    library "org.spongepowered:mixin:0.8.5-SNAPSHOT"
-    library "com.google.guava:guava:21.0"
-    annotationProcessor "org.spongepowered:mixin:0.8.5-SNAPSHOT"
-}
-minecraft.runs.all {
-    lazyToken("minecraft_classpath") {
-        configurations.library.copyRecursive().resolve().collect { it.absolutePath }.join(File.pathSeparator)
-    }
-}
-afterEvaluate {
-    configurations.compileClasspath.resolvedConfiguration.firstLevelModuleDependencies.each { dep ->
-        dependencies.annotationProcessor([group: dep.moduleGroup, name: dep.moduleName, version: dep.moduleVersion])
-    }
-}
-
 mixin {
     add sourceSets.main, "botaniareliquarycompat.refmap.json"
 
