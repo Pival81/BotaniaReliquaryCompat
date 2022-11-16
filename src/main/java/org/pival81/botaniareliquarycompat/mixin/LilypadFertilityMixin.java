@@ -24,8 +24,4 @@ public class LilypadFertilityMixin implements IHornHarvestable {
 
     }
 
-    public boolean hasEffect(ItemStack stack){
-        return true;
-    }
-
 }

@@ -66,7 +66,6 @@ dependencies {
     implementation fg.deobf("curse.maven:baubles-227083:2518667")
     implementation fg.deobf("curse.maven:reliquary-v1-3-241319:2761319")
     implementation fg.deobf("curse.maven:mixin-booter-419286:3886235")
-    implementation fg.deobf("curse.maven:mixinbootstrap-357178:3437402")
 }
 jar {
     manifest {
